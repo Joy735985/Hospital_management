@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="dashboard">
+</div>
+  <h2>Dashboard</h2>
+  <p class="subtext">
+    Quick access to hospital modules and provenance (audit) views.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>Patients</h3>
+      <div class="count">{{ patients_count }}</div>
+      <p>Register and manage patients</p>
+      <a class="card-link" href="/patients">Open</a>
+    </div>
+
+    <div class="card">
+      <h3>Visits</h3>
+      <div class="count">{{ visits_count }}</div>
+      <p>Track patient visits</p>
+      <a class="card-link" href="/visits">Open</a>
+    </div>
+
+    <div class="card">
+      <h3>Diagnoses</h3>
+      <div class="count">{{ diagnoses_count }}</div>
+      <p>Record medical diagnoses</p>
+      <a class="card-link" href="/diagnoses">Open</a>
+    </div>
+
+    <div class="card">
+      <h3>Prescriptions</h3>
+      <div class="count">{{ prescriptions_count }}</div>
+      <p>Manage prescriptions</p>
+      <a class="card-link" href="/prescriptions">Open</a>
+    </div>
+
+    <div class="card">
+      <h3>Lab Results</h3>
+      <div class="count">{{ lab_results_count }}</div>
+      <p>Store lab test results</p>
+      <a class="card-link" href="/lab_results">Open</a>
+    </div>
+
+    <div class="card">
+      <h3>Audit Logs</h3>
+      <div class="count">Provenance</div>
+      <p>Who changed what and when</p>
+      <a class="card-link" href="/audit">Open</a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

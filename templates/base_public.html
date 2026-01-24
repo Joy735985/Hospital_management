@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+  <title>Hospital GUI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">Hospital GUI</div>
+  <div>
+    <a href="/login">Login</a>
+    <a href="/signup">Signup</a>
+  </div>
+</div>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

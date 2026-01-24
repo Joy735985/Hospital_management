@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Doctors</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<h2>Doctors</h2>
+<a href="/dashboard">Dashboard</a> | <a href="/audit">Audit</a> | <a href="/logout">Logout</a><hr>
+
+<h3>Create/Update Doctor Profile</h3>
+<form method="POST">
+  <label>Doctor User</label><br>
+  <select name="doctor_user_id" required>
+    {% for d in doctor_users %}
+      <option value="{{ d.user_id }}">{{ d.user_id }} - {{ d.username }}</option>
+    {% endfor %}
+  </select><br><br>
+  <label>Specialization</label><br><input name="specialization"><br><br>
+  <label>Availability Note</label><br><input name="availability_note"><br><br>
+  <button type="submit">Save</button>
+</form>
+
+<hr>
+<h3>Doctor Profiles</h3>
+<table border="1" cellpadding="6">
+<tr><th>ID</th><th>Username</th><th>Specialization</th><th>Availability</th></tr>
+{% for d in doctor_profiles %}
+<tr><td>{{ d.doctor_id }}</td><td>{{ d.username }}</td><td>{{ d.specialization }}</td><td>{{ d.availability_note }}</td></tr>
+{% endfor %}
+</table>
+</body></html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Visits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+  <h2>Visits</h2>
+
+  <a href="/dashboard">Back to Dashboard</a> |
+  <a href="/patients">Patients</a> |
+  <a href="/audit">Audit Logs</a> |
+  <a href="/logout">Logout</a>
+
+  <hr>
+
+  <h3>Create Visit</h3>
+  <form method="POST">
+    <label>Patient</label><br>
+    <select name="patient_id" required>
+      {% for p in patients %}
+        <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.full_name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Chief Complaint</label><br>
+    <input name="chief_complaint"><br><br>
+
+    <label>Notes</label><br>
+    <textarea name="notes" rows="4" cols="50"></textarea><br><br>
+
+    <button type="submit">Create Visit</button>
+  </form>
+
+  <hr>
+
+  <h3>Visit List</h3>
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Visit ID</th>
+      <th>Patient</th>
+      <th>Time</th>
+      <th>Status</th>
+      <th>Chief Complaint</th>
+    </tr>
+    {% for v in visits %}
+    <tr>
+      <td>{{ v.visit_id }}</td>
+      <td>{{ v.patient_id }} - {{ v.full_name }}</td>
+      <td>{{ v.visit_time }}</td>
+      <td>{{ v.status }}</td>
+      <td>{{ v.chief_complaint }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

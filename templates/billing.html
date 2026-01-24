@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Billing</title></head><body>
+<h2>Billing & Invoicing</h2>
+<a href="/dashboard">Dashboard</a> | <a href="/logout">Logout</a><hr>
+
+<h3>Create Bill</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="create_bill">
+  <label>Patient</label><br>
+  <select name="patient_id" required>
+    {% for p in patients %}<option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.full_name }}</option>{% endfor %}
+  </select><br><br>
+  <label>Visit (optional)</label><br>
+  <select name="visit_id">
+    <option value="">-- none --</option>
+    {% for v in visits %}<option value="{{ v.visit_id }}">{{ v.visit_id }} - {{ v.full_name }}</option>{% endfor %}
+  </select><br><br>
+  <button type="submit">Create</button>
+</form>
+
+<hr>
+<h3>Add Bill Item</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add_item">
+  <label>Bill</label><br>
+  <select name="bill_id" required>
+    {% for b in bills %}<option value="{{ b.bill_id }}">{{ b.bill_id }} - {{ b.full_name }} ({{ b.total_amount }})</option>{% endfor %}
+  </select><br><br>
+  <label>Item Name</label><br><input name="item_name" required><br><br>
+  <label>Amount</label><br><input name="amount" required><br><br>
+  <button type="submit">Add Item</button>
+</form>
+
+<hr>
+<h3>Bills</h3>
+<table border="1" cellpadding="6">
+<tr><th>ID</th><th>Patient</th><th>Visit</th><th>Total</th><th>Status</th><th>Time</th></tr>
+{% for b in bills %}
+<tr><td>{{ b.bill_id }}</td><td>{{ b.full_name }}</td><td>{{ b.visit_id }}</td><td>{{ b.total_amount }}</td><td>{{ b.status }}</td><td>{{ b.created_at }}</td></tr>
+{% endfor %}
+</table>
+
+<hr>
+<h3>Bill Items</h3>
+<table border="1" cellpadding="6">
+<tr><th>Item ID</th><th>Bill ID</th><th>Name</th><th>Amount</th></tr>
+{% for i in items %}
+<tr><td>{{ i.bill_item_id }}</td><td>{{ i.bill_id }}</td><td>{{ i.item_name }}</td><td>{{ i.amount }}</td></tr>
+{% endfor %}
+</table>
+</body></html>

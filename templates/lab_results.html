@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Lab Results</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+  <h2>Lab Results</h2>
+
+  <a href="/dashboard">Dashboard</a> |
+  <a href="/audit">Audit Logs</a> |
+  <a href="/logout">Logout</a>
+
+  <hr>
+
+  <h3>Add Lab Result</h3>
+
+  {% if visits|length == 0 %}
+    <p style="color:red;">No visits found. Please create a visit first from Visits page.</p>
+  {% endif %}
+
+  <form method="POST">
+    <label>Visit</label><br>
+    <select name="visit_id" required>
+      {% for v in visits %}
+        <option value="{{ v.visit_id }}">{{ v.visit_id }} - {{ v.full_name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Test Name</label><br>
+    <input name="test_name" required><br><br>
+
+    <label>Result Value</label><br>
+    <input name="result_value"><br><br>
+
+    <label>Unit</label><br>
+    <input name="unit"><br><br>
+
+    <label>Normal Range</label><br>
+    <input name="normal_range"><br><br>
+
+    <label>Status</label><br>
+    <select name="status">
+      <option value="pending">pending</option>
+      <option value="completed">completed</option>
+    </select><br><br>
+
+    <label>Reason (optional)</label><br>
+    <input name="reason"><br><br>
+
+    <button type="submit">Add Lab Result</button>
+  </form>
+
+  <hr>
+
+  <h3>Lab Result List</h3>
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>ID</th><th>Visit</th><th>Patient</th><th>Test</th><th>Result</th>
+      <th>Unit</th><th>Range</th><th>Status</th><th>Reason</th><th>Time</th>
+    </tr>
+    {% for l in labs %}
+    <tr>
+      <td>{{ l.lab_result_id }}</td>
+      <td>{{ l.visit_id }}</td>
+      <td>{{ l.full_name }}</td>
+      <td>{{ l.test_name }}</td>
+      <td>{{ l.result_value }}</td>
+      <td>{{ l.unit }}</td>
+      <td>{{ l.normal_range }}</td>
+      <td>{{ l.status }}</td>
+      <td>{{ l.reason }}</td>
+      <td>{{ l.created_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

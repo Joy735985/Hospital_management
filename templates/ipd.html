@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><title>IPD</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<h2>IPD (Wards/Beds/Admissions)</h2>
+<a href="/dashboard">Dashboard</a> | <a href="/logout">Logout</a><hr>
+
+<h3>Add Ward</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add_ward">
+  <label>Ward Name</label><br><input name="ward_name" required><br><br>
+  <label>Ward Type</label><br>
+  <select name="ward_type">
+    <option value="general">general</option>
+    <option value="semi-private">semi-private</option>
+    <option value="private">private</option>
+    <option value="icu">icu</option>
+  </select><br><br>
+  <button type="submit">Add Ward</button>
+</form>
+
+<hr>
+<h3>Add Bed</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add_bed">
+  <label>Ward</label><br>
+  <select name="ward_id" required>
+    {% for w in wards %}<option value="{{ w.ward_id }}">{{ w.ward_id }} - {{ w.ward_name }}</option>{% endfor %}
+  </select><br><br>
+  <label>Bed No</label><br><input name="bed_no" required><br><br>
+  <button type="submit">Add Bed</button>
+</form>
+
+<hr>
+<h3>Admit Patient</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="admit">
+  <label>Patient</label><br>
+  <select name="patient_id" required>
+    {% for p in patients %}<option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.full_name }}</option>{% endfor %}
+  </select><br><br>
+
+  <label>Bed (optional)</label><br>
+  <select name="bed_id">
+    <option value="">-- none --</option>
+    {% for b in beds %}
+      <option value="{{ b.bed_id }}">{{ b.bed_id }} - {{ b.ward_name }} - {{ b.bed_no }} (occupied={{ b.is_occupied }})</option>
+    {% endfor %}
+  </select><br><br>
+
+  <button type="submit">Admit</button>
+</form>
+
+<hr>
+<h3>Admissions</h3>
+<table border="1" cellpadding="6">
+<tr><th>ID</th><th>Status</th><th>Patient</th><th>Bed</th><th>Admitted</th><th>Discharged</th></tr>
+{% for a in admissions %}
+<tr>
+<td>{{ a.admission_id }}</td><td>{{ a.status }}</td><td>{{ a.patient_id }} - {{ a.full_name }}</td>
+<td>{{ a.bed_id }} - {{ a.bed_no }}</td><td>{{ a.admitted_at }}</td><td>{{ a.discharged_at }}</td>
+</tr>
+{% endfor %}
+</table>
+</body></html>

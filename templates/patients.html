@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Patients</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>Patients</h2>
+
+<a href="/dashboard">Dashboard</a> |
+<a href="/audit">Audit Logs</a> |
+<a href="/logout">Logout</a>
+
+<hr>
+
+<h3>Add Patient</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add">
+
+  <label>Full Name</label><br>
+  <input name="full_name" required><br><br>
+
+  <label>Phone</label><br>
+  <input name="phone"><br><br>
+
+  <label>Address</label><br>
+  <input name="address"><br><br>
+
+  <button type="submit">Add Patient</button>
+</form>
+
+<hr>
+
+<h3>Search</h3>
+<form method="GET">
+  <input name="q" value="{{ q or '' }}" placeholder="Search name/phone">
+  <button type="submit">Search</button>
+  <a href="/patients">Reset</a>
+</form>
+
+<hr>
+
+<h3>Patient List</h3>
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Actions</th>
+  </tr>
+
+  {% for p in patients %}
+  <tr>
+    <form method="POST">
+      <td>{{ p.patient_id }}
+        <input type="hidden" name="patient_id" value="{{ p.patient_id }}">
+      </td>
+
+      <td><input name="full_name" value="{{ p.full_name }}" required></td>
+      <td><input name="phone" value="{{ p.phone or '' }}"></td>
+      <td><input name="address" value="{{ p.address or '' }}"></td>
+
+      <td>
+        <button type="submit" name="action" value="update">Update</button>
+
+        <button type="submit" name="action" value="delete"
+          onclick="return confirm('Delete this patient (soft delete)?');">
+          Delete
+        </button>
+      </td>
+    </form>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><title>Appointments</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h2>Appointments</h2>
+
+<a href="/dashboard">Dashboard</a> |
+<a href="/audit?table=appointments">Audit</a> |
+<a href="/logout">Logout</a>
+
+<hr>
+
+<h3>Search / Filter</h3>
+<form method="GET">
+  <input name="patient" placeholder="Patient name" value="{{ patient_q or '' }}">
+  <input name="doctor" placeholder="Doctor username" value="{{ doctor_q or '' }}">
+  <select name="status">
+    <option value="">-- any status --</option>
+    <option value="booked" {% if status_q=="booked" %}selected{% endif %}>booked</option>
+    <option value="rescheduled" {% if status_q=="rescheduled" %}selected{% endif %}>rescheduled</option>
+    <option value="cancelled" {% if status_q=="cancelled" %}selected{% endif %}>cancelled</option>
+  </select>
+  <button type="submit">Filter</button>
+  <a href="/appointments">Clear</a>
+</form>
+
+<hr>
+
+<h3>Book Appointment</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="create">
+
+  <label>Patient</label><br>
+  <select name="patient_id" required>
+    {% for p in patients %}
+      <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.full_name }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label>Doctor</label><br>
+  <select name="doctor_id" required>
+    {% for d in doctors %}
+      <option value="{{ d.user_id }}">{{ d.user_id }} - {{ d.username }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label>Date & Time</label><br>
+  <input name="appointment_time" required><br><br>
+
+  <label>Reason</label><br>
+  <input name="reason"><br><br>
+
+  <button type="submit">Book</button>
+</form>
+
+<hr>
+
+<h3>Appointment List</h3>
+<table border="1" cellpadding="6">
+<tr>
+  <th>ID</th><th>Time</th><th>Status</th><th>Patient</th><th>Doctor</th><th>Action</th>
+</tr>
+
+{% for a in appts %}
+<tr>
+  <td>{{ a.appointment_id }}</td>
+  <td>{{ a.appointment_time }}</td>
+  <td>{{ a.status }}</td>
+  <td>{{ a.full_name }}</td>
+  <td>{{ a.doctor_name }}</td>
+  <td>
+    {% if a.status != 'cancelled' %}
+    <form method="POST" style="display:inline;">
+      <input type="hidden" name="action" value="reschedule">
+      <input type="hidden" name="appointment_id" value="{{ a.appointment_id }}">
+      <input name="appointment_time" placeholder="YYYY-MM-DD HH:MM">
+      <button type="submit">Reschedule</button>
+    </form>
+
+    <form method="POST" style="display:inline;">
+      <input type="hidden" name="action" value="cancel">
+      <input type="hidden" name="appointment_id" value="{{ a.appointment_id }}">
+      <button type="submit">Cancel</button>
+    </form>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

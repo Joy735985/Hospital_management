@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Prescriptions</title></head>
+<body>
+  <h2>Prescriptions</h2>
+
+  <a href="/dashboard">Dashboard</a> |
+  <a href="/audit">Audit Logs</a> |
+  <a href="/logout">Logout</a>
+
+  <hr>
+
+  <h3>Add Prescription</h3>
+  <form method="POST">
+    <label>Visit</label><br>
+    <select name="visit_id" required>
+      {% for v in visits %}
+        <option value="{{ v.visit_id }}">{{ v.visit_id }} - {{ v.full_name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Medicine Name</label><br>
+    <input name="medicine_name" required><br><br>
+
+    <label>Dose</label><br>
+    <input name="dose"><br><br>
+
+    <label>Frequency</label><br>
+    <input name="frequency"><br><br>
+
+    <label>Duration (days)</label><br>
+    <input name="duration_days" type="number"><br><br>
+
+    <label>Reason (optional)</label><br>
+    <input name="reason"><br><br>
+
+    <button type="submit">Add Prescription</button>
+  </form>
+
+  <hr>
+
+  <h3>Prescription List</h3>
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>ID</th><th>Visit</th><th>Patient</th><th>Medicine</th><th>Dose</th><th>Frequency</th>
+      <th>Days</th><th>Status</th><th>Reason</th><th>Time</th>
+    </tr>
+    {% for p in prescriptions %}
+    <tr>
+      <td>{{ p.prescription_id }}</td>
+      <td>{{ p.visit_id }}</td>
+      <td>{{ p.full_name }}</td>
+      <td>{{ p.medicine_name }}</td>
+      <td>{{ p.dose }}</td>
+      <td>{{ p.frequency }}</td>
+      <td>{{ p.duration_days }}</td>
+      <td>{{ p.status }}</td>
+      <td>{{ p.reason }}</td>
+      <td>{{ p.created_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

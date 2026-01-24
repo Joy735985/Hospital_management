@@ -1,0 +1,53 @@
+{% extends "base_public.html" %}
+{% block content %}
+<style>
+  .hero {
+    background: #dbeaf6;
+    border-radius: 8px;
+    padding: 26px 22px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .hero h1 { margin: 0 0 10px 0; font-size: 34px; }
+  .hero p { margin: 0; color:#2a2a2a; }
+  .cards { display:flex; flex-direction: column; gap: 12px; }
+  .card {
+    background: rgba(255,255,255,.55);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 10px;
+    padding: 14px 14px;
+  }
+  .card-title { font-weight: 700; margin-bottom: 6px; }
+  .card-sub { font-size: 13px; color:#2a2a2a; margin-bottom: 10px; }
+  .card a { text-decoration:none; font-weight: 700; }
+</style>
+
+<div class="hero">
+  <div>
+    <h1>Start your appointment request here.</h1>
+    <p>This is the easiest way to reach us.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">New Patients</div>
+      <div class="card-sub">Provide your information and set a follow-up time.</div>
+      <a href="/patient-new">›</a>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Returning patients</div>
+      <div class="card-sub">Request using your patient account.</div>
+      <a href="/patient-returning">›</a>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Referring physicians</div>
+      <div class="card-sub">Get consults and refer your patients.</div>
+      <a href="/patient-referring">›</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

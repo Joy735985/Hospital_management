@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Diagnoses</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Diagnoses</h2>
+
+  <a href="/dashboard">Dashboard</a> |
+  <a href="/audit">Audit Logs</a> |
+  <a href="/logout">Logout</a>
+
+  <hr>
+
+  <h3>Add Diagnosis</h3>
+  <form method="POST">
+    <label>Visit</label><br>
+    <select name="visit_id" required>
+      {% for v in visits %}
+        <option value="{{ v.visit_id }}">{{ v.visit_id }} - {{ v.full_name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Diagnosis</label><br>
+    <input name="diagnosis_text" required><br><br>
+
+    <label>Severity</label><br>
+    <select name="severity">
+      <option value="low">low</option>
+      <option value="medium">medium</option>
+      <option value="high">high</option>
+    </select><br><br>
+
+    <label>Reason (optional)</label><br>
+    <input name="reason"><br><br>
+
+    <button type="submit">Add Diagnosis</button>
+  </form>
+
+  <hr>
+
+  <h3>Diagnosis List</h3>
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>ID</th><th>Visit</th><th>Patient</th><th>Diagnosis</th><th>Severity</th><th>Reason</th><th>Time</th>
+    </tr>
+    {% for d in diagnoses %}
+    <tr>
+      <td>{{ d.diagnosis_id }}</td>
+      <td>{{ d.visit_id }}</td>
+      <td>{{ d.full_name }}</td>
+      <td>{{ d.diagnosis_text }}</td>
+      <td>{{ d.severity }}</td>
+      <td>{{ d.reason }}</td>
+      <td>{{ d.created_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

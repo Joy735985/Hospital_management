@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Audit Logs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Audit Logs</h2>
+
+  <a href="/dashboard">Back to Dashboard</a> |
+  <a href="/patients">Patients</a> |
+  <a href="/visits">Visits</a> |
+  <a href="/logout">Logout</a>
+
+  <hr>
+
+  <form method="GET">
+    <label>Table</label>
+    <select name="table">
+      <option value="patients" {% if table=="patients" %}selected{% endif %}>patients</option>
+      <option value="visits" {% if table=="visits" %}selected{% endif %}>visits</option>
+      <option value="diagnoses" {% if table=="diagnoses" %}selected{% endif %}>diagnoses</option>
+      <option value="prescriptions" {% if table=="prescriptions" %}selected{% endif %}>prescriptions</option>
+      <option value="lab_results" {% if table=="lab_results" %}selected{% endif %}>lab_results</option>
+      <option value="appointments" {% if table=="appointments" %}selected{% endif %}>appointments</option>
+
+
+    </select>
+
+    <label>Record ID</label>
+    <input name="record_id" value="{{ record_id }}">
+
+    <button type="submit">Filter</button>
+  </form>
+
+  <hr>
+
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Audit ID</th>
+      <th>Record ID</th>
+      <th>Operation</th>
+      <th>User</th>
+      <th>Time</th>
+    </tr>
+    {% for l in logs %}
+    <tr>
+      <td>{{ l.audit_id }}</td>
+      <td>{{ l.record_id }}</td>
+      <td>{{ l.operation_type }}</td>
+      <td>{{ l.username }}</td>
+      <td>{{ l.changed_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <hr>
+
+  {% if table == "patients" %}
+    <h3>Patient Field Changes (when available)</h3>
+    <table border="1" cellpadding="6">
+      <tr>
+        <th>Audit ID</th>
+        <th>Old Name → New Name</th>
+        <th>Old Phone → New Phone</th>
+        <th>Old Address → New Address</th>
+      </tr>
+      {% for l in logs %}
+      <tr>
+        <td>{{ l.audit_id }}</td>
+        <td>{{ l.old_full_name }} → {{ l.new_full_name }}</td>
+        <td>{{ l.old_phone }} → {{ l.new_phone }}</td>
+        <td>{{ l.old_address }} → {{ l.new_address }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if table == "visits" %}
+    <h3>Visit Status Changes (when available)</h3>
+    <table border="1" cellpadding="6">
+      <tr>
+        <th>Audit ID</th>
+        <th>Old Status → New Status</th>
+      </tr>
+      {% for l in logs %}
+      <tr>
+        <td>{{ l.audit_id }}</td>
+        <td>{{ l.old_status }} → {{ l.new_status }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+</body>
+</html>

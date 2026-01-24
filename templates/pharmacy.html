@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Pharmacy</title></head><body>
+<h2>Pharmacy (Inventory)</h2>
+<a href="/dashboard">Dashboard</a> | <a href="/logout">Logout</a><hr>
+
+<h3>Add Medicine</h3>
+<form method="POST">
+  <label>Name</label><br><input name="medicine_name" required><br><br>
+  <label>Stock Qty</label><br><input name="stock_qty" type="number" value="0"><br><br>
+  <label>Unit Price</label><br><input name="unit_price" value="0.00"><br><br>
+  <button type="submit">Add</button>
+</form>
+
+<hr>
+<h3>Medicine List</h3>
+<table border="1" cellpadding="6">
+<tr><th>ID</th><th>Name</th><th>Stock</th><th>Price</th><th>Updated</th></tr>
+{% for m in medicines %}
+<tr><td>{{ m.medicine_id }}</td><td>{{ m.medicine_name }}</td><td>{{ m.stock_qty }}</td><td>{{ m.unit_price }}</td><td>{{ m.updated_at }}</td></tr>
+{% endfor %}
+</table>
+</body></html>

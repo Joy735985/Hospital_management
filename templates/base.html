@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Hospital GUI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">Hospital GUI</div>
+  <div>
+    <span>{{ session.username }} ({{ session.role }})</span>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
