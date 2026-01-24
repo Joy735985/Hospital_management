@@ -151,7 +151,6 @@ def patients():
 
     action = request.form.get("action", "")
 
-    # ---------- ADD ----------
     if request.method == "POST" and action == "add":
         full_name = request.form.get("full_name", "").strip()
         phone = request.form.get("phone", "").strip()
@@ -165,7 +164,6 @@ def patients():
         conn.commit()
         return redirect(url_for("patients"))
 
-    # ---------- UPDATE ----------
     if request.method == "POST" and action == "update":
         patient_id = request.form["patient_id"]
         full_name = request.form.get("full_name", "").strip()
@@ -181,7 +179,6 @@ def patients():
         conn.commit()
         return redirect(url_for("patients"))
 
-    # ---------- SOFT DELETE ----------
     if request.method == "POST" and action == "delete":
         patient_id = request.form["patient_id"]
         user_id = session["user_id"]
@@ -345,7 +342,6 @@ def appointments():
     conn = get_connection()
     cur = conn.cursor(dictionary=True)
 
-    # ---------- HANDLE POST ACTIONS ----------
     action = request.form.get("action", "")
 
     if request.method == "POST" and action == "create":
@@ -385,7 +381,6 @@ def appointments():
         """, (user_id, appointment_id))
         conn.commit()
 
-    # ---------- FILTERS ----------
     patient_q = request.args.get("patient", "").strip()
     doctor_q = request.args.get("doctor", "").strip()
     status_q = request.args.get("status", "").strip()
