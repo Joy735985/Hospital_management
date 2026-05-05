@@ -1,96 +1,252 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Audit Logs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Logs — MediCare Hospital</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h2>Audit Logs</h2>
 
-  <a href="/dashboard">Back to Dashboard</a> |
-  <a href="/patients">Patients</a> |
-  <a href="/visits">Visits</a> |
-  <a href="/logout">Logout</a>
+<!-- ── HEADER ───────────────────────────────────────── -->
+<header>
+  <div class="navbar">
+    <div class="logo">MediCare Hospital</div>
+    <ul>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/patients">Patients</a></li>
+      <li><a href="/visits">Visits</a></li>
+      <li><a href="/doctors">Doctors</a></li>
+      <li><a href="/appointments">Appointments</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <a href="/logout" class="btn btn-ghost btn-sm">Logout</a>
+    </div>
+  </div>
+</header>
 
-  <hr>
+<!-- ── LAYOUT ────────────────────────────────────────── -->
+<div class="layout">
 
-  <form method="GET">
-    <label>Table</label>
-    <select name="table">
-      <option value="patients" {% if table=="patients" %}selected{% endif %}>patients</option>
-      <option value="visits" {% if table=="visits" %}selected{% endif %}>visits</option>
-      <option value="diagnoses" {% if table=="diagnoses" %}selected{% endif %}>diagnoses</option>
-      <option value="prescriptions" {% if table=="prescriptions" %}selected{% endif %}>prescriptions</option>
-      <option value="lab_results" {% if table=="lab_results" %}selected{% endif %}>lab_results</option>
-      <option value="appointments" {% if table=="appointments" %}selected{% endif %}>appointments</option>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><span class="nav-icon">⬛</span> Dashboard</a></li>
+        <li><a href="/patients"><span class="nav-icon">🧑</span> Patients</a></li>
+        <li><a href="/doctors"><span class="nav-icon">👨‍⚕️</span> Doctors</a></li>
+        <li><a href="/appointments"><span class="nav-icon">📅</span> Appointments</a></li>
+        <li><a href="/visits"><span class="nav-icon">🏥</span> Visits</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Clinical</div>
+      <ul class="sidebar-nav">
+        <li><a href="/prescriptions"><span class="nav-icon">💊</span> Prescriptions</a></li>
+        <li><a href="/lab_results"><span class="nav-icon">🔬</span> Lab Results</a></li>
+        <li><a href="/diagnoses"><span class="nav-icon">📋</span> Diagnoses</a></li>
+        <li><a href="/pharmacy"><span class="nav-icon">🧪</span> Pharmacy</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Admin</div>
+      <ul class="sidebar-nav">
+        <li><a href="/billing"><span class="nav-icon">💳</span> Billing</a></li>
+        <li><a href="/ipd"><span class="nav-icon">🛏️</span> IPD / Beds</a></li>
+        <li><a href="/audit" class="active"><span class="nav-icon">📁</span> Audit Logs</a></li>
+      </ul>
+    </div>
+  </aside>
 
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
 
-    </select>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h2>Audit Logs</h2>
+        <p class="breadcrumb">
+          <a href="/dashboard">Dashboard</a>
+          <span>›</span>
+          <span>Audit Logs</span>
+        </p>
+      </div>
+    </div>
 
-    <label>Record ID</label>
-    <input name="record_id" value="{{ record_id }}">
+    <!-- Filter Card -->
+    <div class="card" style="margin-bottom: 24px;">
+      <h4 style="margin-bottom: 16px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">Filter Logs</h4>
+      <form method="GET" style="background:transparent; border:none; padding:0; box-shadow:none; border-radius:0;">
+        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+          <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+            <label>Table</label>
+            <select name="table">
+              <option value="patients"      {% if table=="patients"      %}selected{% endif %}>Patients</option>
+              <option value="visits"        {% if table=="visits"        %}selected{% endif %}>Visits</option>
+              <option value="diagnoses"     {% if table=="diagnoses"     %}selected{% endif %}>Diagnoses</option>
+              <option value="prescriptions" {% if table=="prescriptions" %}selected{% endif %}>Prescriptions</option>
+              <option value="lab_results"   {% if table=="lab_results"   %}selected{% endif %}>Lab Results</option>
+              <option value="appointments"  {% if table=="appointments"  %}selected{% endif %}>Appointments</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+            <label>Record ID</label>
+            <input type="text" name="record_id" value="{{ record_id }}" placeholder="Enter record ID…">
+          </div>
+          <div style="padding-bottom: 1px;">
+            <button type="submit" class="btn btn-primary">
+              🔍 Filter
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
 
-    <button type="submit">Filter</button>
-  </form>
+    <!-- Main Audit Table -->
+    <div class="table-wrapper" style="margin-bottom: 28px;">
+      <div class="table-toolbar">
+        <span class="ttl" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Audit Records</span>
+        <span class="badge badge-gray">{{ logs | length }} entries</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Audit ID</th>
+            <th>Record ID</th>
+            <th>Operation</th>
+            <th>User</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in logs %}
+          <tr>
+            <td><span style="color: var(--text-muted); font-family: monospace; font-size: 12px;">#{{ l.audit_id }}</span></td>
+            <td><span style="font-weight: 500; color: var(--text-primary);">{{ l.record_id }}</span></td>
+            <td>
+              {% if l.operation_type == 'INSERT' %}
+                <span class="badge badge-teal">{{ l.operation_type }}</span>
+              {% elif l.operation_type == 'UPDATE' %}
+                <span class="badge badge-gold">{{ l.operation_type }}</span>
+              {% elif l.operation_type == 'DELETE' %}
+                <span class="badge badge-red">{{ l.operation_type }}</span>
+              {% else %}
+                <span class="badge badge-gray">{{ l.operation_type }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="avatar blue" style="width:28px;height:28px;font-size:11px;">
+                  {{ l.username[0].upper() if l.username else '?' }}
+                </div>
+                {{ l.username }}
+              </div>
+            </td>
+            <td style="color: var(--text-muted); font-size: 13px;">{{ l.changed_at }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              No audit records found for the selected filter.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-  <hr>
+    <!-- Patient Field Changes -->
+    {% if table == "patients" %}
+    <div class="section-divider">
+      <h3>Patient Field Changes</h3>
+    </div>
+    <div class="table-wrapper" style="margin-bottom: 28px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Audit ID</th>
+            <th>Name Change</th>
+            <th>Phone Change</th>
+            <th>Address Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in logs %}
+          <tr>
+            <td><span style="color: var(--text-muted); font-family: monospace; font-size: 12px;">#{{ l.audit_id }}</span></td>
+            <td>
+              {% if l.old_full_name or l.new_full_name %}
+                <span style="color: var(--danger); font-size: 12px;">{{ l.old_full_name or '—' }}</span>
+                <span style="color: var(--text-muted); margin: 0 6px;">→</span>
+                <span style="color: var(--success); font-size: 12px;">{{ l.new_full_name or '—' }}</span>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if l.old_phone or l.new_phone %}
+                <span style="color: var(--danger); font-size: 12px;">{{ l.old_phone or '—' }}</span>
+                <span style="color: var(--text-muted); margin: 0 6px;">→</span>
+                <span style="color: var(--success); font-size: 12px;">{{ l.new_phone or '—' }}</span>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if l.old_address or l.new_address %}
+                <span style="color: var(--danger); font-size: 12px;">{{ l.old_address or '—' }}</span>
+                <span style="color: var(--text-muted); margin: 0 6px;">→</span>
+                <span style="color: var(--success); font-size: 12px;">{{ l.new_address or '—' }}</span>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
 
-  <table border="1" cellpadding="6">
-    <tr>
-      <th>Audit ID</th>
-      <th>Record ID</th>
-      <th>Operation</th>
-      <th>User</th>
-      <th>Time</th>
-    </tr>
-    {% for l in logs %}
-    <tr>
-      <td>{{ l.audit_id }}</td>
-      <td>{{ l.record_id }}</td>
-      <td>{{ l.operation_type }}</td>
-      <td>{{ l.username }}</td>
-      <td>{{ l.changed_at }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+    <!-- Visit Status Changes -->
+    {% if table == "visits" %}
+    <div class="section-divider">
+      <h3>Visit Status Changes</h3>
+    </div>
+    <div class="table-wrapper" style="margin-bottom: 28px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Audit ID</th>
+            <th>Previous Status</th>
+            <th></th>
+            <th>New Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in logs %}
+          <tr>
+            <td><span style="color: var(--text-muted); font-family: monospace; font-size: 12px;">#{{ l.audit_id }}</span></td>
+            <td><span class="badge badge-red">{{ l.old_status or '—' }}</span></td>
+            <td style="color: var(--text-muted); text-align: center;">→</td>
+            <td><span class="badge badge-teal">{{ l.new_status or '—' }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
 
-  <hr>
+  </main>
+</div>
 
-  {% if table == "patients" %}
-    <h3>Patient Field Changes (when available)</h3>
-    <table border="1" cellpadding="6">
-      <tr>
-        <th>Audit ID</th>
-        <th>Old Name → New Name</th>
-        <th>Old Phone → New Phone</th>
-        <th>Old Address → New Address</th>
-      </tr>
-      {% for l in logs %}
-      <tr>
-        <td>{{ l.audit_id }}</td>
-        <td>{{ l.old_full_name }} → {{ l.new_full_name }}</td>
-        <td>{{ l.old_phone }} → {{ l.new_phone }}</td>
-        <td>{{ l.old_address }} → {{ l.new_address }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
+<!-- ── FOOTER ────────────────────────────────────────── -->
+<footer>
+  &copy; 2026 MediCare Hospital. All rights reserved.
+</footer>
 
-  {% if table == "visits" %}
-    <h3>Visit Status Changes (when available)</h3>
-    <table border="1" cellpadding="6">
-      <tr>
-        <th>Audit ID</th>
-        <th>Old Status → New Status</th>
-      </tr>
-      {% for l in logs %}
-      <tr>
-        <td>{{ l.audit_id }}</td>
-        <td>{{ l.old_status }} → {{ l.new_status }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
 </body>
 </html>

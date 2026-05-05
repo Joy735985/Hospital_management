@@ -191,7 +191,6 @@ def patients():
         conn.commit()
         return redirect(url_for("patients"))
 
-    # ---------- LIST ----------
     search = request.args.get("q", "").strip()
 
     if search:
@@ -212,6 +211,8 @@ def patients():
     conn.close()
 
     return render_template("patients.html", patients=patients_list, q=search)
+
+
 @app.route("/visits", methods=["GET", "POST"])
 def visits():
     if not login_required():
@@ -382,8 +383,8 @@ def appointments():
         conn.commit()
 
     patient_q = request.args.get("patient", "").strip()
-    doctor_q = request.args.get("doctor", "").strip()
-    status_q = request.args.get("status", "").strip()
+    doctor_q  = request.args.get("doctor", "").strip()
+    status_q  = request.args.get("status", "").strip()
 
     sql = """
         SELECT a.appointment_id, a.appointment_time, a.status, a.reason,
@@ -399,11 +400,9 @@ def appointments():
     if patient_q:
         sql += " AND p.full_name LIKE %s"
         params.append(f"%{patient_q}%")
-
     if doctor_q:
         sql += " AND u.username LIKE %s"
         params.append(f"%{doctor_q}%")
-
     if status_q:
         sql += " AND a.status=%s"
         params.append(status_q)
@@ -412,7 +411,6 @@ def appointments():
     cur.execute(sql, tuple(params))
     appt_list = cur.fetchall()
 
-    # ---------- DROPDOWNS ----------
     cur.execute("SELECT patient_id, full_name FROM patients ORDER BY patient_id ASC")
     patients_list = cur.fetchall()
 
@@ -431,6 +429,8 @@ def appointments():
         doctor_q=doctor_q,
         status_q=status_q
     )
+
+
 @app.route("/prescriptions", methods=["GET", "POST"])
 def prescriptions():
     if "user_id" not in session:
@@ -440,13 +440,13 @@ def prescriptions():
     cur = conn.cursor(dictionary=True)
 
     if request.method == "POST":
-        visit_id = request.form["visit_id"]
+        visit_id      = request.form["visit_id"]
         medicine_name = request.form["medicine_name"]
-        dose = request.form.get("dose", "")
-        frequency = request.form.get("frequency", "")
+        dose          = request.form.get("dose", "")
+        frequency     = request.form.get("frequency", "")
         duration_days = request.form.get("duration_days", "")
-        reason = request.form.get("reason", "")
-        user_id = session["user_id"]
+        reason        = request.form.get("reason", "")
+        user_id       = session["user_id"]
 
         cur.execute(
             """
@@ -454,7 +454,8 @@ def prescriptions():
             (visit_id, medicine_name, dose, frequency, duration_days, status, reason, created_by, updated_by)
             VALUES (%s, %s, %s, %s, %s, 'active', %s, %s, %s)
             """,
-            (visit_id, medicine_name, dose, frequency, duration_days if duration_days else None, reason, user_id, user_id)
+            (visit_id, medicine_name, dose, frequency,
+             duration_days if duration_days else None, reason, user_id, user_id)
         )
         conn.commit()
 
@@ -491,14 +492,14 @@ def lab_results():
     cur = conn.cursor(dictionary=True)
 
     if request.method == "POST":
-        visit_id = request.form["visit_id"]
-        test_name = request.form["test_name"]
+        visit_id     = request.form["visit_id"]
+        test_name    = request.form["test_name"]
         result_value = request.form.get("result_value", "")
-        unit = request.form.get("unit", "")
+        unit         = request.form.get("unit", "")
         normal_range = request.form.get("normal_range", "")
-        status = request.form.get("status", "pending")
-        reason = request.form.get("reason", "")
-        user_id = session["user_id"]
+        status       = request.form.get("status", "pending")
+        reason       = request.form.get("reason", "")
+        user_id      = session["user_id"]
 
         cur.execute(
             """
@@ -534,12 +535,65 @@ def lab_results():
     return render_template("lab_results.html", visits=visit_list, labs=lab_list)
 
 
+# ── PHARMACY ────────────────────────────────────────────────
+@app.route("/pharmacy", methods=["GET", "POST"])
+def pharmacy():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_connection()
+    cur = conn.cursor(dictionary=True)
+
+    if request.method == "POST":
+        action = request.form.get("action", "add")
+
+        if action == "add":
+            medicine_name = request.form.get("medicine_name", "").strip()
+            category      = request.form.get("category", "").strip()
+            stock_qty     = request.form.get("stock_qty", 0)
+            unit_price    = request.form.get("unit_price", 0.0)
+            expiry_date   = request.form.get("expiry_date", "") or None
+
+            cur.execute("""
+                INSERT INTO medicines (medicine_name, category, stock_qty, unit_price, expiry_date)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (medicine_name, category, stock_qty, unit_price, expiry_date))
+            conn.commit()
+
+        elif action == "update_stock":
+            medicine_id = request.form.get("medicine_id")
+            stock_qty   = request.form.get("stock_qty", 0)
+
+            cur.execute("""
+                UPDATE medicines SET stock_qty=%s WHERE medicine_id=%s
+            """, (stock_qty, medicine_id))
+            conn.commit()
+
+    # Search / filter
+    search = request.args.get("q", "").strip()
+    if search:
+        cur.execute("""
+            SELECT * FROM medicines
+            WHERE medicine_name LIKE %s OR category LIKE %s
+            ORDER BY medicine_name ASC
+        """, (f"%{search}%", f"%{search}%"))
+    else:
+        cur.execute("SELECT * FROM medicines ORDER BY medicine_name ASC")
+
+    medicines_list = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template("pharmacy.html", medicines=medicines_list, q=search)
+
+
+# ── AUDIT ────────────────────────────────────────────────────
 @app.route("/audit")
 def audit():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    table = request.args.get("table", "patients")
+    table     = request.args.get("table", "patients")
     record_id = request.args.get("record_id", "").strip()
 
     conn = get_connection()
@@ -580,7 +634,8 @@ def audit():
     elif table == "diagnoses":
         sql = """
             SELECT a.audit_id, a.diagnosis_id AS record_id, a.operation_type, a.changed_at, u.username,
-                   a.old_diagnosis_text, a.new_diagnosis_text, a.old_severity, a.new_severity, a.old_reason, a.new_reason
+                   a.old_diagnosis_text, a.new_diagnosis_text, a.old_severity, a.new_severity,
+                   a.old_reason, a.new_reason
             FROM audit_diagnoses a
             LEFT JOIN app_users u ON a.actor_user_id = u.user_id
         """
@@ -610,7 +665,8 @@ def audit():
     elif table == "lab_results":
         sql = """
             SELECT a.audit_id, a.lab_result_id AS record_id, a.operation_type, a.changed_at, u.username,
-                   a.old_status, a.new_status, a.old_result_value, a.new_result_value, a.old_reason, a.new_reason
+                   a.old_status, a.new_status, a.old_result_value, a.new_result_value,
+                   a.old_reason, a.new_reason
             FROM audit_lab_results a
             LEFT JOIN app_users u ON a.actor_user_id = u.user_id
         """
@@ -641,6 +697,7 @@ def audit():
     conn.close()
 
     return render_template("audit.html", logs=logs, table=table, record_id=record_id)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

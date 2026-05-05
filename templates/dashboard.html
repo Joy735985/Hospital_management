@@ -1,58 +1,185 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="dashboard">
-</div>
-  <h2>Dashboard</h2>
-  <p class="subtext">
-    Quick access to hospital modules and provenance (audit) views.
-  </p>
-
-  <div class="grid">
-
-    <div class="card">
-      <h3>Patients</h3>
-      <div class="count">{{ patients_count }}</div>
-      <p>Register and manage patients</p>
-      <a class="card-link" href="/patients">Open</a>
-    </div>
-
-    <div class="card">
-      <h3>Visits</h3>
-      <div class="count">{{ visits_count }}</div>
-      <p>Track patient visits</p>
-      <a class="card-link" href="/visits">Open</a>
-    </div>
-
-    <div class="card">
-      <h3>Diagnoses</h3>
-      <div class="count">{{ diagnoses_count }}</div>
-      <p>Record medical diagnoses</p>
-      <a class="card-link" href="/diagnoses">Open</a>
-    </div>
-
-    <div class="card">
-      <h3>Prescriptions</h3>
-      <div class="count">{{ prescriptions_count }}</div>
-      <p>Manage prescriptions</p>
-      <a class="card-link" href="/prescriptions">Open</a>
-    </div>
-
-    <div class="card">
-      <h3>Lab Results</h3>
-      <div class="count">{{ lab_results_count }}</div>
-      <p>Store lab test results</p>
-      <a class="card-link" href="/lab_results">Open</a>
-    </div>
-
-    <div class="card">
-      <h3>Audit Logs</h3>
-      <div class="count">Provenance</div>
-      <p>Who changed what and when</p>
-      <a class="card-link" href="/audit">Open</a>
-    </div>
-
+<!-- ── DASHBOARD HERO with Doctor.jpeg background ───── -->
+<div class="dashboard-hero">
+  <div class="dashboard-hero-bg"></div>
+  <div class="dashboard-hero-overlay"></div>
+  <div class="dashboard-hero-content">
+    <p class="dashboard-hero-eyebrow">MediCare Hospital — Management System</p>
+    <h1>Welcome back, <span>{{ session.username }}</span></h1>
+    <p class="dashboard-hero-sub">Here's what's happening at MediCare Hospital today.</p>
   </div>
 </div>
+
+<!-- ── STAT CARDS ─────────────────────────────────────── -->
+<div class="grid" style="margin-bottom: 32px;">
+
+  <div class="stat-card">
+    <div class="stat-icon blue">🧑</div>
+    <div>
+      <div class="stat-value">{{ patients_count }}</div>
+      <div class="stat-label">Patients</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon teal">🏥</div>
+    <div>
+      <div class="stat-value">{{ visits_count }}</div>
+      <div class="stat-label">Visits</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon gold">📋</div>
+    <div>
+      <div class="stat-value">{{ diagnoses_count }}</div>
+      <div class="stat-label">Diagnoses</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon red">💊</div>
+    <div>
+      <div class="stat-value">{{ prescriptions_count }}</div>
+      <div class="stat-label">Prescriptions</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── MODULE CARDS ───────────────────────────────────── -->
+<div class="section-divider">
+  <h3>Hospital Modules</h3>
+</div>
+
+<div class="grid">
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">🧑</div>
+    <h3>Patients</h3>
+    <p>Register and manage patient records</p>
+    <a href="/patients" class="btn btn-primary btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">🏥</div>
+    <h3>Visits</h3>
+    <p>Track and manage patient visits</p>
+    <a href="/visits" class="btn btn-primary btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">📋</div>
+    <h3>Diagnoses</h3>
+    <p>Record and review medical diagnoses</p>
+    <a href="/diagnoses" class="btn btn-primary btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">💊</div>
+    <h3>Prescriptions</h3>
+    <p>Manage patient prescriptions</p>
+    <a href="/prescriptions" class="btn btn-primary btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">🔬</div>
+    <h3>Lab Results</h3>
+    <p>Store and view lab test results</p>
+    <a href="/lab_results" class="btn btn-primary btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+  <div class="card">
+    <div style="font-size:28px; margin-bottom:12px;">📁</div>
+    <h3>Audit Logs</h3>
+    <p>Track who changed what and when</p>
+    <a href="/audit" class="btn btn-gold btn-sm" style="margin-top:14px;">Open Module</a>
+  </div>
+
+</div>
+
+<!-- ── DASHBOARD-SPECIFIC STYLES ─────────────────────── -->
+<style>
+.dashboard-hero {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  min-height: 380px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.dashboard-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: url("{{ url_for('static', filename='Doctor.jpeg') }}")
+              center 20% / cover no-repeat;
+  z-index: 0;
+  transform: scale(1.02);
+}
+
+.dashboard-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(4, 6, 14, 0.93) 0%,
+    rgba(8, 12, 26, 0.80) 40%,
+    rgba(8, 12, 26, 0.25) 75%,
+    rgba(8, 12, 26, 0.10) 100%
+  );
+  z-index: 1;
+}
+
+.dashboard-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to top, var(--bg-primary), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.dashboard-hero-content {
+  position: relative;
+  z-index: 3;
+  padding: 48px 52px;
+  max-width: 620px;
+}
+
+.dashboard-hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+.dashboard-hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  color: #f0f2f8;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.dashboard-hero-content h1 span {
+  color: var(--accent-gold-light);
+}
+
+.dashboard-hero-sub {
+  font-size: 15px;
+  color: rgba(240, 242, 248, 0.55);
+  margin: 0;
+}
+</style>
 
 {% endblock %}

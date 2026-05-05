@@ -1,64 +1,133 @@
-<!doctype html>
-<html>
-<head><meta charset="utf-8"><title>Prescriptions</title></head>
-<body>
-  <h2>Prescriptions</h2>
+{% extends "base.html" %}
+{% block content %}
 
-  <a href="/dashboard">Dashboard</a> |
-  <a href="/audit">Audit Logs</a> |
-  <a href="/logout">Logout</a>
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h2>Prescriptions</h2>
+    <p class="breadcrumb">
+      <a href="/dashboard">Dashboard</a>
+      <span>›</span>
+      <span>Prescriptions</span>
+    </p>
+  </div>
+</div>
 
-  <hr>
+<!-- ── ADD PRESCRIPTION FORM ──────────────────────────── -->
+<div class="card" style="margin-bottom: 32px;">
+  <h4 class="form-title">Add New Prescription</h4>
+  <form method="POST" style="background:transparent; border:none; padding:0; box-shadow:none; border-radius:0;">
 
-  <h3>Add Prescription</h3>
-  <form method="POST">
-    <label>Visit</label><br>
-    <select name="visit_id" required>
-      {% for v in visits %}
-        <option value="{{ v.visit_id }}">{{ v.visit_id }} - {{ v.full_name }}</option>
-      {% endfor %}
-    </select><br><br>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Visit / Patient</label>
+        <select name="visit_id" required>
+          <option value="" disabled selected>Select a visit…</option>
+          {% for v in visits %}
+            <option value="{{ v.visit_id }}">Visit #{{ v.visit_id }} — {{ v.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Medicine Name</label>
+        <input type="text" name="medicine_name" placeholder="e.g. Amoxicillin" required>
+      </div>
+    </div>
 
-    <label>Medicine Name</label><br>
-    <input name="medicine_name" required><br><br>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Dose</label>
+        <input type="text" name="dose" placeholder="e.g. 500mg">
+      </div>
+      <div class="form-group">
+        <label>Frequency</label>
+        <input type="text" name="frequency" placeholder="e.g. Twice daily">
+      </div>
+    </div>
 
-    <label>Dose</label><br>
-    <input name="dose"><br><br>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Duration (days)</label>
+        <input type="number" name="duration_days" placeholder="e.g. 7" min="1">
+      </div>
+      <div class="form-group">
+        <label>Reason <span style="color:var(--text-muted); font-weight:400;">(optional)</span></label>
+        <input type="text" name="reason" placeholder="e.g. Bacterial infection">
+      </div>
+    </div>
 
-    <label>Frequency</label><br>
-    <input name="frequency"><br><br>
+    <div style="margin-top: 8px;">
+      <button type="submit" class="btn btn-primary">💊 Add Prescription</button>
+    </div>
 
-    <label>Duration (days)</label><br>
-    <input name="duration_days" type="number"><br><br>
-
-    <label>Reason (optional)</label><br>
-    <input name="reason"><br><br>
-
-    <button type="submit">Add Prescription</button>
   </form>
+</div>
 
-  <hr>
-
-  <h3>Prescription List</h3>
-  <table border="1" cellpadding="6">
-    <tr>
-      <th>ID</th><th>Visit</th><th>Patient</th><th>Medicine</th><th>Dose</th><th>Frequency</th>
-      <th>Days</th><th>Status</th><th>Reason</th><th>Time</th>
-    </tr>
-    {% for p in prescriptions %}
-    <tr>
-      <td>{{ p.prescription_id }}</td>
-      <td>{{ p.visit_id }}</td>
-      <td>{{ p.full_name }}</td>
-      <td>{{ p.medicine_name }}</td>
-      <td>{{ p.dose }}</td>
-      <td>{{ p.frequency }}</td>
-      <td>{{ p.duration_days }}</td>
-      <td>{{ p.status }}</td>
-      <td>{{ p.reason }}</td>
-      <td>{{ p.created_at }}</td>
-    </tr>
-    {% endfor %}
+<!-- ── PRESCRIPTIONS TABLE ────────────────────────────── -->
+<div class="table-wrapper">
+  <div class="table-toolbar">
+    <span style="font-size:14px; font-weight:600; color:var(--text-primary);">Prescription List</span>
+    <span class="badge badge-blue">{{ prescriptions | length }} records</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Visit</th>
+        <th>Patient</th>
+        <th>Medicine</th>
+        <th>Dose</th>
+        <th>Frequency</th>
+        <th>Days</th>
+        <th>Status</th>
+        <th>Reason</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in prescriptions %}
+      <tr>
+        <td><span style="color:var(--text-muted); font-family:monospace; font-size:12px;">#{{ p.prescription_id }}</span></td>
+        <td><span style="color:var(--text-secondary);">{{ p.visit_id }}</span></td>
+        <td>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="avatar blue" style="width:28px;height:28px;font-size:11px;">
+              {{ p.full_name[0].upper() if p.full_name else '?' }}
+            </div>
+            <span style="color:var(--text-primary); font-weight:500;">{{ p.full_name }}</span>
+          </div>
+        </td>
+        <td style="color:var(--text-primary); font-weight:500;">{{ p.medicine_name }}</td>
+        <td>{{ p.dose or '—' }}</td>
+        <td>{{ p.frequency or '—' }}</td>
+        <td>
+          {% if p.duration_days %}
+            <span class="badge badge-gray">{{ p.duration_days }}d</span>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if p.status == 'active' or p.status == 'Active' %}
+            <span class="badge badge-teal">{{ p.status }}</span>
+          {% elif p.status == 'completed' or p.status == 'Completed' %}
+            <span class="badge badge-blue">{{ p.status }}</span>
+          {% elif p.status == 'cancelled' or p.status == 'Cancelled' %}
+            <span class="badge badge-red">{{ p.status }}</span>
+          {% else %}
+            <span class="badge badge-gray">{{ p.status or 'N/A' }}</span>
+          {% endif %}
+        </td>
+        <td style="color:var(--text-secondary); font-size:13px;">{{ p.reason or '—' }}</td>
+        <td style="color:var(--text-muted); font-size:12px;">{{ p.created_at }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="10" style="text-align:center; padding:40px; color:var(--text-muted);">
+          No prescriptions found. Add one above.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
   </table>
-</body>
-</html>
+</div>
+
+{% endblock %}

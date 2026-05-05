@@ -1,21 +1,147 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Pharmacy</title></head><body>
-<h2>Pharmacy (Inventory)</h2>
-<a href="/dashboard">Dashboard</a> | <a href="/logout">Logout</a><hr>
+{% extends "base.html" %}
+{% block content %}
 
-<h3>Add Medicine</h3>
-<form method="POST">
-  <label>Name</label><br><input name="medicine_name" required><br><br>
-  <label>Stock Qty</label><br><input name="stock_qty" type="number" value="0"><br><br>
-  <label>Unit Price</label><br><input name="unit_price" value="0.00"><br><br>
-  <button type="submit">Add</button>
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h2>Pharmacy</h2>
+    <p class="breadcrumb">
+      <a href="/dashboard">Dashboard</a>
+      <span>›</span>
+      <span>Pharmacy</span>
+    </p>
+  </div>
+</div>
+
+<!-- ── ADD MEDICINE FORM ──────────────────────────────── -->
+<div class="card" style="margin-bottom: 32px;">
+  <h4 class="form-title">Add Medicine to Inventory</h4>
+  <form method="POST" style="background:transparent; border:none; padding:0; box-shadow:none; border-radius:0;">
+    <input type="hidden" name="action" value="add">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Medicine Name</label>
+        <input type="text" name="medicine_name" placeholder="e.g. Paracetamol" required>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <input type="text" name="category" placeholder="e.g. Analgesic, Antibiotic…">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Stock Quantity</label>
+        <input type="number" name="stock_qty" placeholder="e.g. 100" min="0" value="0">
+      </div>
+      <div class="form-group">
+        <label>Unit Price (৳)</label>
+        <input type="number" name="unit_price" placeholder="e.g. 12.50" min="0" step="0.01" value="0.00">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Expiry Date <span style="color:var(--text-muted); font-weight:400;">(optional)</span></label>
+        <input type="date" name="expiry_date">
+      </div>
+      <div class="form-group" style="display:flex; align-items:flex-end;">
+        <button type="submit" class="btn btn-primary" style="width:100%;">🧪 Add Medicine</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<!-- ── SEARCH BAR ─────────────────────────────────────── -->
+<form method="GET" style="background:transparent; border:none; padding:0; box-shadow:none; border-radius:0; margin-bottom:20px;">
+  <div style="display:flex; gap:12px; align-items:center;">
+    <div class="table-search" style="max-width:360px; flex:1;">
+      <span style="color:var(--text-muted);">🔍</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="Search medicine or category…">
+    </div>
+    <button type="submit" class="btn btn-ghost btn-sm">Search</button>
+    {% if q %}
+      <a href="/pharmacy" class="btn btn-ghost btn-sm">Clear</a>
+    {% endif %}
+  </div>
 </form>
 
-<hr>
-<h3>Medicine List</h3>
-<table border="1" cellpadding="6">
-<tr><th>ID</th><th>Name</th><th>Stock</th><th>Price</th><th>Updated</th></tr>
-{% for m in medicines %}
-<tr><td>{{ m.medicine_id }}</td><td>{{ m.medicine_name }}</td><td>{{ m.stock_qty }}</td><td>{{ m.unit_price }}</td><td>{{ m.updated_at }}</td></tr>
-{% endfor %}
-</table>
-</body></html>
+<!-- ── MEDICINES TABLE ────────────────────────────────── -->
+<div class="table-wrapper">
+  <div class="table-toolbar">
+    <span style="font-size:14px; font-weight:600; color:var(--text-primary);">Medicine Inventory</span>
+    <span class="badge badge-teal">{{ medicines | length }} items</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Medicine Name</th>
+        <th>Category</th>
+        <th>Stock</th>
+        <th>Unit Price</th>
+        <th>Expiry Date</th>
+        <th>Update Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in medicines %}
+      <tr>
+        <td><span style="color:var(--text-muted); font-family:monospace; font-size:12px;">#{{ m.medicine_id }}</span></td>
+        <td style="color:var(--text-primary); font-weight:500;">{{ m.medicine_name }}</td>
+        <td>
+          {% if m.category %}
+            <span class="badge badge-blue">{{ m.category }}</span>
+          {% else %}
+            <span style="color:var(--text-muted);">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if m.stock_qty is not none %}
+            {% if m.stock_qty|int <= 10 %}
+              <span class="badge badge-red">{{ m.stock_qty }} left</span>
+            {% elif m.stock_qty|int <= 50 %}
+              <span class="badge badge-gold">{{ m.stock_qty }} units</span>
+            {% else %}
+              <span class="badge badge-teal">{{ m.stock_qty }} units</span>
+            {% endif %}
+          {% else %}
+            <span style="color:var(--text-muted);">—</span>
+          {% endif %}
+        </td>
+        <td style="color:var(--text-primary);">
+          {% if m.unit_price is not none %}
+            ৳{{ "%.2f"|format(m.unit_price) }}
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if m.expiry_date %}
+            <span style="font-size:13px; color:var(--text-secondary);">{{ m.expiry_date }}</span>
+          {% else %}
+            <span style="color:var(--text-muted);">—</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" style="background:transparent; border:none; padding:0; box-shadow:none; border-radius:0; display:flex; gap:8px; align-items:center;">
+            <input type="hidden" name="action" value="update_stock">
+            <input type="hidden" name="medicine_id" value="{{ m.medicine_id }}">
+            <input type="number" name="stock_qty" value="{{ m.stock_qty or 0 }}" min="0"
+                   style="width:80px; padding:6px 10px; font-size:13px;">
+            <button type="submit" class="btn btn-ghost btn-sm">Update</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
+          No medicines found. Add one above.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,24 +1,81 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <title>Hospital GUI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediCare Hospital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<div class="navbar">
-  <div class="logo">Hospital GUI</div>
-  <div>
-    <span>{{ session.username }} ({{ session.role }})</span>
-    <a href="/dashboard">Dashboard</a>
-    <a href="/logout">Logout</a>
+<!-- ── HEADER ───────────────────────────────────────── -->
+<header>
+  <div class="navbar">
+    <div class="logo">MediCare Hospital</div>
+    <ul>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/patients">Patients</a></li>
+      <li><a href="/doctors">Doctors</a></li>
+      <li><a href="/appointments">Appointments</a></li>
+      <li><a href="/visits">Visits</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <span style="font-size:13px; color:var(--text-muted);">
+        {{ session.username }}
+        <span class="badge badge-gold" style="margin-left:6px;">{{ session.role }}</span>
+      </span>
+      <a href="/logout" class="btn btn-ghost btn-sm">Logout</a>
+    </div>
   </div>
+</header>
+
+<!-- ── LAYOUT ────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><span class="nav-icon">🏠</span> Dashboard</a></li>
+        <li><a href="/patients"><span class="nav-icon">🧑</span> Patients</a></li>
+        <li><a href="/doctors"><span class="nav-icon">👨‍⚕️</span> Doctors</a></li>
+        <li><a href="/appointments"><span class="nav-icon">📅</span> Appointments</a></li>
+        <li><a href="/visits"><span class="nav-icon">🏥</span> Visits</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Clinical</div>
+      <ul class="sidebar-nav">
+        <li><a href="/prescriptions"><span class="nav-icon">💊</span> Prescriptions</a></li>
+        <li><a href="/lab_results"><span class="nav-icon">🔬</span> Lab Results</a></li>
+        <li><a href="/diagnoses"><span class="nav-icon">📋</span> Diagnoses</a></li>
+        <li><a href="/pharmacy"><span class="nav-icon">🧪</span> Pharmacy</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Admin</div>
+      <ul class="sidebar-nav">
+        <li><a href="/billing"><span class="nav-icon">💳</span> Billing</a></li>
+        <li><a href="/ipd"><span class="nav-icon">🛏️</span> IPD / Beds</a></li>
+        <li><a href="/audit"><span class="nav-icon">📁</span> Audit Logs</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- PAGE CONTENT -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
 </div>
 
-<div class="container">
-  {% block content %}{% endblock %}
-</div>
+<!-- ── FOOTER ────────────────────────────────────────── -->
+<footer>
+  &copy; 2026 MediCare Hospital. All rights reserved.
+</footer>
 
 </body>
 </html>
